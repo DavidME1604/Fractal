@@ -3,7 +3,7 @@ import numpy as np
 from numba import jit, prange
 
 # Configuración inicial
-res = width, height = 800, 450
+res = width, height = 900, 500
 offset = np.array([0, 0])
 texture_size = 256
 
@@ -174,6 +174,63 @@ class Fractal:
 
         # Blit de la imagen volteada
         self.app.screen.blit(flipped_surface, (0, 0))
+        self.draw_axes_with_labels()  # ejes
+        self.draw_reference_map()  # mapa
+
+    def draw_axes_with_labels(self):
+        margin_x = 50  # Margen izquierdo para las etiquetas
+        margin_y = 30  # Margen inferior para las etiquetas
+
+        # Dimensiones del área del fractal (ajustada con márgenes)
+        fractal_width = width - margin_x
+        fractal_height = height - margin_y
+
+        # Dibuja el área de fractal principal (solo para referencia)
+
+        # Calcula las posiciones de las etiquetas
+        font = pg.font.Font(None, 24)  # Fuente para las etiquetas
+        x_ticks = np.linspace(self.x_min, self.x_max, 5)  # Etiquetas en el eje X
+        y_ticks = np.linspace(self.y_min, self.y_max, 5)  # Etiquetas en el eje Y
+
+        # Dibujar las etiquetas del eje X
+        for i, tick in enumerate(x_ticks):
+            pos_x = margin_x + i * (fractal_width / (len(x_ticks) - 1))
+            label = font.render(f"{tick:.2f}", True, (255, 255, 255))
+            self.app.screen.blit(label, (pos_x - label.get_width() // 2, fractal_height + 5))
+
+        # Dibujar las etiquetas del eje Y
+        for i, tick in enumerate(y_ticks):
+            pos_y = fractal_height - i * (fractal_height / (len(y_ticks) - 1))
+            label = font.render(f"{tick:.2f}", True, (255, 255, 255))
+            self.app.screen.blit(label, (margin_x - label.get_width() - 10, pos_y - label.get_height() // 2))
+
+    
+    def draw_reference_map(self):
+        # Tamaño del mapa de referencia (más pequeño que la ventana principal)
+        map_width, map_height = 125, 125
+
+        if not hasattr(self, 'reference_surface'):
+            reference_array = np.zeros((map_width, map_height, 3), dtype=np.uint32)
+            render_kernel(
+                reference_array, texture_array,
+                map_width, map_height,
+                self.max_iter, -2, 1, -1.5, 1.5  # Límites fijos para el fractal completo
+            )
+            self.reference_surface = pg.surfarray.make_surface(reference_array)
+            self.reference_surface = pg.transform.flip(self.reference_surface, False, True)
+
+        # CAMBIAR POSICION
+        self.app.screen.blit(self.reference_surface, (width - map_width - 38, height - map_height - 10))
+
+        # Calcula la posición del punto rojo basado en la vista actual
+        x_ratio = (self.x_min + (self.x_max - self.x_min) / 2 + 2) / 3  # Mapea [-2, 1] a [0, 1]
+        y_ratio = (self.y_min + (self.y_max - self.y_min) / 2 + 1.5) / 3  # Mapea [-1.5, 1.5] a [0, 1]
+
+        point_x = int((width - map_width - 10) + x_ratio * map_width)
+        point_y = int((height - map_height - 10) + (1 - y_ratio) * map_height)
+
+        pg.draw.circle(self.app.screen, (255, 0, 0), (point_x, point_y), 5)
+
 
     def run(self):
         self.update()
@@ -212,8 +269,8 @@ class App:
         """Dibuja la barra de colores en la parte derecha de la pantalla."""
         bar_width = 20
         bar_height = height - 20
-        bar_x = width - bar_width - 30
-        bar_y = 10
+        bar_x = width - bar_width - 15
+        bar_y = 5
 
         colors = [
             (0, 0, 0),       # Negro
@@ -319,4 +376,4 @@ class App:
 if __name__ == '__main__':
     pg.font.init()
     app = App()
-    app.run()
+app.run()
