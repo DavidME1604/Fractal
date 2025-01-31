@@ -191,7 +191,6 @@ class App:
         self.clock = pg.time.Clock()
         self.fractal = Fractal(self)
 
-       
         # Crear campos de entrada simples y un botón con Pygame
         self.font = pg.font.Font(None, 24)
 
@@ -208,6 +207,39 @@ class App:
 
         self.update_button = pg.Rect(10, 90, 100, 30)
         self.active_input = None
+
+    def draw_color_bar(self):
+        """Dibuja la barra de colores en la parte derecha de la pantalla."""
+        bar_width = 20
+        bar_height = height - 20
+        bar_x = width - bar_width - 30
+        bar_y = 10
+
+        # Crear una superficie para la barra de colores
+        color_bar = pg.Surface((bar_width, bar_height))
+
+        # Rellenar la barra de colores con un degradado suave
+        for i in range(bar_height):
+            # Calcular el índice del degradado de manera continua
+            color_index = int((i / bar_height) * (texture_size - 1))
+
+            # Asegurarse de que el índice está dentro de los límites
+            color_index = min(max(color_index, 0), texture_size - 1)
+
+            # Usar un único eje para tomar colores (evitar desorden diagonal)
+            color = texture_array[color_index, 0]  # Solo tomar la primera columna
+
+            # Dibujar la línea con el color seleccionado
+            pg.draw.line(color_bar, color, (0, i), (bar_width, i))
+
+        # Dibujar la barra de colores en la pantalla
+        self.screen.blit(color_bar, (bar_x, bar_y))
+
+        # Dibujar etiquetas para el rango de iteraciones
+        label_min = self.font.render("0", True, (255, 255, 255))
+        label_max = self.font.render(str(self.fractal.max_iter), True, (255, 255, 255))
+        self.screen.blit(label_min, (bar_x + bar_width + 5, bar_y + bar_height - 20))
+        self.screen.blit(label_max, (bar_x + bar_width + 5, bar_y))
 
     def draw_ui(self):
         # Dibuja los campos de texto y el botón
@@ -255,6 +287,7 @@ class App:
             self.screen.fill((0, 0, 0))
             self.fractal.run()
             self.draw_ui()
+            self.draw_color_bar()  # Dibujar la barra de colores
             pg.display.flip()
 
             for event in pg.event.get():
