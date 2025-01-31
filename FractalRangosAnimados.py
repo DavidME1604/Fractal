@@ -305,6 +305,7 @@ class App:
             self.fractal.run()
             self.draw_ui()
             self.draw_color_bar()  # Dibujar la barra de colores
+            self.draw_color_bar()  # Dibujar la barra de colores
             pg.display.flip()
 
             for event in pg.event.get():
