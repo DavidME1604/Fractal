@@ -191,7 +191,6 @@ class App:
         self.clock = pg.time.Clock()
         self.fractal = Fractal(self)
 
-       
         # Crear campos de entrada simples y un botón con Pygame
         self.font = pg.font.Font(None, 24)
 
@@ -208,6 +207,56 @@ class App:
 
         self.update_button = pg.Rect(10, 90, 100, 30)
         self.active_input = None
+
+    def draw_color_bar(self):
+        """Dibuja la barra de colores en la parte derecha de la pantalla."""
+        bar_width = 20
+        bar_height = height - 20
+        bar_x = width - bar_width - 30
+        bar_y = 10
+
+        colors = [
+            (0, 0, 0),       # Negro
+            (0, 0, 128),     # Azul oscuro
+            (0, 0, 255),     # Azul
+            (0, 128, 255),   # Azul celeste
+            (0, 255, 128),   # Verde azulado
+            (0, 255, 0),     # Verde
+            (255, 0, 255),   # Magenta
+            (255, 0, 0),     # Rojo
+            (255, 255, 255), # Blanco
+            (255, 255, 255), # Más blanco
+            (255, 255, 255)  # Aún más blanco
+        ]
+
+        # Crear una superficie para la barra de colores
+        color_bar = pg.Surface((bar_width, bar_height))
+
+
+        # Rellenar la barra de colores con un degradado suave
+        for y in range(bar_height):
+            t = y / (bar_height - 1) * (len(colors) - 1)
+            idx = int(t)
+            frac = t - idx
+            color1 = colors[idx]
+            color2 = colors[min(idx + 1, len(colors) - 1)]
+            blended_color = (
+                int(color1[0] + (color2[0] - color1[0]) * frac),
+                int(color1[1] + (color2[1] - color1[1]) * frac),
+                int(color1[2] + (color2[2] - color1[2]) * frac)
+            )
+
+            # Dibujar la línea con el color seleccionado
+            pg.draw.line(color_bar, blended_color, (0, y), (bar_width, y))
+
+        # Dibujar la barra de colores en la pantalla
+        self.screen.blit(color_bar, (bar_x, bar_y))
+
+        # Dibujar etiquetas para el rango de iteraciones
+        label_min = self.font.render("0", True, (255, 255, 255))
+        label_max = self.font.render(str(self.fractal.max_iter), True, (255, 255, 255))
+        self.screen.blit(label_max, (bar_x + bar_width + 5, bar_y + bar_height - 20))
+        self.screen.blit(label_min, (bar_x + bar_width + 5, bar_y))
 
     def draw_ui(self):
         # Dibuja los campos de texto y el botón
@@ -255,6 +304,7 @@ class App:
             self.screen.fill((0, 0, 0))
             self.fractal.run()
             self.draw_ui()
+            self.draw_color_bar()  # Dibujar la barra de colores
             pg.display.flip()
 
             for event in pg.event.get():
