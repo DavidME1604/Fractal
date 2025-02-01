@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import matplotlib.cm as cm
 from numba import jit, prange
 
 # Configuración inicial
@@ -9,6 +10,14 @@ texture_size = 256
 
 # Generación de una textura artificial
 texture_array = np.zeros((texture_size, texture_size, 3), dtype=np.uint32)
+
+# Cambio de colores usando matplotlib
+# colormap = cm.get_cmap("inferno", texture_size)
+# 
+# for i in range(texture_size):
+#     r, g, b, _ = colormap(i / texture_size)  # Obtener color normalizado
+#     texture_array[i, i] = (int(r * 255), int(g * 255), int(b * 255))
+
 for i in range(texture_size):
     color = (i % 256, (i * 5) % 256, (i * 10) % 256)
     texture_array[i, i] = color
@@ -202,6 +211,8 @@ class Fractal:
         for i, tick in enumerate(y_ticks):
             pos_y = fractal_height - i * (fractal_height / (len(y_ticks) - 1))
             label = font.render(f"{tick:.4f}", True, (255, 255, 255))
+            # Rojo
+            # label = font.render(f"{tick:.4f}", True, (255, 0, 0))
             self.app.screen.blit(label, (margin_x - label.get_width() - 10, pos_y - label.get_height() // 2))
 
     
@@ -312,6 +323,9 @@ class App:
         # Dibujar etiquetas para el rango de iteraciones
         font_bar = pg.font.Font(None, 21)
         label_min = font_bar.render("0", True, (255, 255, 255))
+        # ROJO
+        # label_min = self.font.render("0", True, (255, 0, 0))
+        # label_max = font_bar.render(str(self.fractal.max_iter), True, (255, 0, 0))
         label_max = font_bar.render(str(self.fractal.max_iter), True, (255, 255, 255))
         #label_min = self.font.render("0", True, (255, 255, 255))
         #label_max = self.font.render(str(self.fractal.max_iter), True, (255, 255, 255))
