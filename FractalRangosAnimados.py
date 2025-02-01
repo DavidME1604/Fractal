@@ -196,7 +196,7 @@ class Fractal:
         for i, tick in enumerate(x_ticks):
             pos_x = margin_x + i * (fractal_width / (len(x_ticks) - 1))
             label = font.render(f"{tick:.4f}", True, (255, 255, 255))
-            self.app.screen.blit(label, (pos_x - label.get_width() // 2, fractal_height + 5))
+            self.app.screen.blit(label, (pos_x - label.get_width() // 2, fractal_height + 2))
 
         # Dibujar las etiquetas del eje Y
         for i, tick in enumerate(y_ticks):
@@ -220,7 +220,7 @@ class Fractal:
             self.reference_surface = pg.transform.flip(self.reference_surface, False, True)
 
         # CAMBIAR POSICION
-        self.app.screen.blit(self.reference_surface, (width - map_width - 38, height - map_height - 10))
+        self.app.screen.blit(self.reference_surface, (width - map_width - 50, height - map_height - 10))
 
         # Calcula la posición del punto rojo basado en la vista actual
         x_ratio = (self.x_min + (self.x_max - self.x_min) / 2 + 2) / 3  # Mapea [-2, 1] a [0, 1]
@@ -267,9 +267,9 @@ class App:
 
     def draw_color_bar(self):
         """Dibuja la barra de colores en la parte derecha de la pantalla."""
-        bar_width = 20
-        bar_height = height - 20
-        bar_x = width - bar_width - 15
+        bar_width = 18
+        bar_height = int((height - 18) * 0.8)
+        bar_x = width - bar_width - 25
         bar_y = 5
 
         colors = [
@@ -312,8 +312,8 @@ class App:
         # Dibujar etiquetas para el rango de iteraciones
         label_min = self.font.render("0", True, (255, 255, 255))
         label_max = self.font.render(str(self.fractal.max_iter), True, (255, 255, 255))
-        self.screen.blit(label_max, (bar_x + bar_width + 5, bar_y + bar_height - 20))
-        self.screen.blit(label_min, (bar_x + bar_width + 5, bar_y))
+        self.screen.blit(label_max, (bar_x + bar_width + 1, bar_y + bar_height - 15))
+        self.screen.blit(label_min, (bar_x + bar_width + 1, bar_y))
 
     def draw_ui(self):
         # Dibuja los campos de texto y el botón
