@@ -310,8 +310,11 @@ class App:
         self.screen.blit(color_bar, (bar_x, bar_y))
 
         # Dibujar etiquetas para el rango de iteraciones
-        label_min = self.font.render("0", True, (255, 255, 255))
-        label_max = self.font.render(str(self.fractal.max_iter), True, (255, 255, 255))
+        font_bar = pg.font.Font(None, 21)
+        label_min = font_bar.render("0", True, (255, 255, 255))
+        label_max = font_bar.render(str(self.fractal.max_iter), True, (255, 255, 255))
+        #label_min = self.font.render("0", True, (255, 255, 255))
+        #label_max = self.font.render(str(self.fractal.max_iter), True, (255, 255, 255))
         self.screen.blit(label_max, (bar_x + bar_width + 1, bar_y + bar_height - 15))
         self.screen.blit(label_min, (bar_x + bar_width + 1, bar_y))
 
