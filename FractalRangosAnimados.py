@@ -195,13 +195,13 @@ class Fractal:
         # Dibujar las etiquetas del eje X
         for i, tick in enumerate(x_ticks):
             pos_x = margin_x + i * (fractal_width / (len(x_ticks) - 1))
-            label = font.render(f"{tick:.2f}", True, (255, 255, 255))
+            label = font.render(f"{tick:.4f}", True, (255, 255, 255))
             self.app.screen.blit(label, (pos_x - label.get_width() // 2, fractal_height + 5))
 
         # Dibujar las etiquetas del eje Y
         for i, tick in enumerate(y_ticks):
             pos_y = fractal_height - i * (fractal_height / (len(y_ticks) - 1))
-            label = font.render(f"{tick:.2f}", True, (255, 255, 255))
+            label = font.render(f"{tick:.4f}", True, (255, 255, 255))
             self.app.screen.blit(label, (margin_x - label.get_width() - 10, pos_y - label.get_height() // 2))
 
     
