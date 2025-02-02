@@ -48,6 +48,11 @@ def medir_uso_recursos():
 
 # Estado inicial antes de ejecutar el programa
 print("\n--- ESTADO INICIAL DE RECURSOS ---")
+cpu_inicial = psutil.cpu_percent(interval=1)  # Uso inicial de la CPU
+ram_inicial = psutil.virtual_memory().percent  # Uso inicial de la RAM
+
+print(f"Uso Inicial de CPU: {cpu_inicial:.2f}%")
+print(f"Uso Inicial de RAM: {ram_inicial:.2f}%")
 print(f"Hilos utilizados por Numba: {numba.get_num_threads()}")
 print(f"CPU Disponible: {psutil.cpu_count(logical=True)} núcleos")
 print(f"RAM Total: {psutil.virtual_memory().total / 1e9:.2f} GB")
