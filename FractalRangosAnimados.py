@@ -1,5 +1,9 @@
 import pygame as pg
 import numpy as np
+import psutil
+import time
+import threading
+import numba
 from numba import jit, prange
 
 # Configuración inicial
@@ -33,6 +37,25 @@ def render_kernel(screen_array, texture_array, width, height, max_iter, x_min, x
             col = int(texture_size * num_iter / max_iter)
             col = min(col, texture_size - 1)
             screen_array[x, y] = texture_array[col, col]
+
+def medir_uso_recursos():
+    print("\n--- MONITOREO DE RECURSOS COMPUTACIONALES ---")
+    while True:
+        cpu_usage = psutil.cpu_percent(interval=1)  # % de uso de CPU
+        memory_info = psutil.virtual_memory()  # Uso de RAM
+        print(f"CPU: {cpu_usage:.2f}% | RAM: {memory_info.percent:.2f}%")
+        time.sleep(1)
+
+# Estado inicial antes de ejecutar el programa
+print("\n--- ESTADO INICIAL DE RECURSOS ---")
+print(f"Hilos utilizados por Numba: {numba.get_num_threads()}")
+print(f"CPU Disponible: {psutil.cpu_count(logical=True)} núcleos")
+print(f"RAM Total: {psutil.virtual_memory().total / 1e9:.2f} GB")
+print("------------------------------------\n")
+
+# Hilo separado para medir recursos sin afectar pygame
+monitor_thread = threading.Thread(target=medir_uso_recursos, daemon=True)
+monitor_thread.start()
 
 class Fractal:
     def __init__(self, app):
@@ -138,7 +161,7 @@ class Fractal:
                 self.x_min, self.x_max = self.target_x_min, self.target_x_max
                 self.y_min, self.y_max = self.target_y_min, self.target_y_max
                 self.needs_rescale = False
-
+            start_time = time.time()
             render_kernel(
                 self.screen_array, texture_array,
                 width, height,
@@ -146,6 +169,8 @@ class Fractal:
                 self.x_min, self.x_max,
                 self.y_min, self.y_max
             )
+            end_time = time.time()
+            print(f"Tiempo de renderizado: {end_time - start_time:.4f} seg")
 
     def draw(self):
         tmp_surface = pg.surfarray.make_surface(self.screen_array)
